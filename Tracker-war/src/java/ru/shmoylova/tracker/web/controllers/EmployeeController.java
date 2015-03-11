@@ -1,10 +1,13 @@
 package ru.shmoylova.tracker.web.controllers;
 
+import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.inject.Inject;
 import ru.shmoylova.tracker.entity.Department;
 import ru.shmoylova.tracker.entity.Employee;
 import ru.shmoylova.tracker.entity.Permission;
@@ -17,14 +20,17 @@ public class EmployeeController {
 
     @EJB
     EmployeeSessionBeanLocal employeeBean;
-    private static final String ERROR_PREFIX_FOR_LIST = "Список сотрудников: ";
-    private static final String ERROR_PREFIX_FOR_EDIT = "Добавление/изменение данных сотрудника: ";
-    private static final String ERROR_PREFIX_FOR_DELETE = "Удаление данных сотрудника: ";
+    @Inject
+    SessionHolderBean shBean;
+    private static final String ERROR_PREFIX_FOR_LIST = "error_employee_table_prefix";
+    private static final String ERROR_PREFIX_FOR_EDIT = "error_edit_employee_prefix";
+    private static final String ERROR_PREFIX_FOR_DELETE = "error_delete_employee_prefix";
     private static final String PAGE_EMPLOYEE = "emplist";
     private static final String PAGE_INDEX = "index";
     private static final String PAGE_BROWSE = "browse";
-    private static final String REQUEST_ERROR = "Ошибка при выполнении запроса - ";
-    private String errorPrefix = ERROR_PREFIX_FOR_LIST;
+    private static final String REQUEST_ERROR = "request_error";
+    private static final String BUNDLE_LOC = "ru.shmoylova.tracker.web.nls.messages";
+    private final ResourceBundle bundle;
     private int empId;
     private MessagesController printer = null;
     private Employee emp;
@@ -40,24 +46,23 @@ public class EmployeeController {
     public EmployeeController() {
         emp = new Employee();
         printer = new MessagesController();
+        bundle = ResourceBundle.getBundle(BUNDLE_LOC, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
     public String save() {
-        errorPrefix = ERROR_PREFIX_FOR_EDIT;
         try {
             employeeBean.insertOrUpdate(emp);
         } catch (Exception e) {
-            printer.printError(errorPrefix + REQUEST_ERROR + e.getMessage());
+            printer.printError(shBean.getBundle(BUNDLE_LOC, ERROR_PREFIX_FOR_EDIT, REQUEST_ERROR));
         }
         return PAGE_EMPLOYEE;
     }
 
     public String delete() {
-        errorPrefix = ERROR_PREFIX_FOR_DELETE;
         try {
             employeeBean.remove(emp);
         } catch (Exception e) {
-            printer.printError(errorPrefix + REQUEST_ERROR + e.getMessage());
+            printer.printError(shBean.getBundle(BUNDLE_LOC, ERROR_PREFIX_FOR_DELETE, REQUEST_ERROR));
         }
         return PAGE_EMPLOYEE;
     }
@@ -80,11 +85,11 @@ public class EmployeeController {
                 empList = new ListDataModel(employeeBean.getAllEmployees());
             }
         } catch (NullPointerException npe) {
-            printer.printError(ERROR_PREFIX_FOR_LIST + REQUEST_ERROR);
+            printer.printError(shBean.getBundle(BUNDLE_LOC, ERROR_PREFIX_FOR_LIST,REQUEST_ERROR));
         }
         return empList;
     }
-
+    
     public String getDepartmentName() {
         String dept = current.getDepartment().getDeptName();
         return dept;

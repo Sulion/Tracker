@@ -8,6 +8,10 @@
             <base-name>ru.shmoylova.tracker.web.nls.messages</base-name>
             <var>msg</var>
         </resource-bundle>
+        <resource-bundle>
+            <base-name>ru.shmoylova.tracker.web.nls.content</base-name>
+            <var>content</var>
+        </resource-bundle>
     </application>
     <navigation-rule>
         <from-view-id>*</from-view-id>

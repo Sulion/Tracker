@@ -6,7 +6,8 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
     <ui:define name="body">
         <c:if test="#{sessionHolderBean.getUserID() > 0}">
             <h2>Список сотрудников</h2>
@@ -27,29 +28,37 @@
                     </h:column>
                     <h:column>
                         <f:facet name="header">
+                            <h:outputText value="Department"/>
+                        </f:facet>
+                        <h:outputText value="#{item.department.deptName}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Job"/>
+                        </f:facet>
+                        <h:outputText value="#{item.jobTitle}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
                             <h:outputText value="Login"/>
                         </f:facet>
                         <h:outputText value="#{item.login}"/>
                     </h:column>
                     <h:column>
                         <f:facet name="header">
-                            <h:outputText value=" "/>
+                            <h:outputText value="Role"/>
                         </f:facet>
-                        <table width="100%" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td>
-                                    <h:button value="Редактировать" outcome="edit-emp">
-                                        <f:param name="empId" value="#{item.empId}" />
-                                    </h:button>
-                                </td>
-                                <td>
-                                    <h:button value="Удалить" outcome="delete-emp">
-                                        <f:param name="empId" value="#{item.empId}" />
-                                    </h:button>
-                                </td>
-                            </tr>
-                        </table>
-                                  <!--h:commandLink action="#{employeeController.prepareView()}" value="View"/-->
+                        <h:outputText value="#{item.role.roleName}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Action"/>
+                        </f:facet>
+                        <h:selectOneListbox id="actions_list" size="1"
+                                            valueChangeListener="#{listBoxBean.performAction}"
+                                            onchange="submit()">
+                            <f:selectItems value="#{listBoxBean.actionListItems}"/>
+                        </h:selectOneListbox>
                     </h:column>
                 </h:dataTable>
                 <br/>

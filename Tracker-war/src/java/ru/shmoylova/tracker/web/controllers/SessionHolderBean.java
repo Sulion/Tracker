@@ -2,11 +2,9 @@ package ru.shmoylova.tracker.web.controllers;
 
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 import ru.shmoylova.tracker.interfaces.beans.EmployeeSessionBeanLocal;
 
 /**
@@ -14,12 +12,13 @@ import ru.shmoylova.tracker.interfaces.beans.EmployeeSessionBeanLocal;
  * @author Ksiona
  */
 @ManagedBean
-@SessionScoped
+@ApplicationScoped
 public class SessionHolderBean {
 
     private static final String ERROR_LOGIN_PREFIX = "error_login_page_prefix";
     private static final String ERROR_LOGIN = "login_failed";
-    private static final String BUNDLE_LOC = "ru.shmoylova.tracker.web.nls.messages";
+    private static final String BUNDLE_MSG_LOC = "ru.shmoylova.tracker.web.nls.messages";
+    private static final String BUNDLE_CONTENT_LOC = "ru.shmoylova.tracker.web.nls.content";
     private static final String PAGE_INDEX = "index";
     private static final String PAGE_ERROR = "error";
     private int userID = 0;
@@ -27,7 +26,7 @@ public class SessionHolderBean {
     private String userPassword = null;
     private String lastError = "";
     private MessagesController printer = null;
-    ResourceBundle bundle;
+    private ResourceBundle bundle;
 
     @EJB
     EmployeeSessionBeanLocal employeeBean;
@@ -37,8 +36,16 @@ public class SessionHolderBean {
      */
     public SessionHolderBean() {
         printer = new MessagesController();
-        bundle = ResourceBundle.getBundle(BUNDLE_LOC, FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
+    }
+
+    public String getBundle(String bundleLocation, String... arr) {
+        bundle = ResourceBundle.getBundle(bundleLocation, FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        String result = " ";
+        for (int i = 0; i < arr.length; i++) {
+            result += bundle.getString(arr[i]) + " ";
+        }
+        return result;
     }
 
     public String processExit() {
@@ -53,7 +60,7 @@ public class SessionHolderBean {
         if (userID > 0) {
             return PAGE_INDEX;
         } else {
-            this.lastError = bundle.getString(ERROR_LOGIN_PREFIX) + bundle.getString(ERROR_LOGIN);
+            this.lastError = getBundle(BUNDLE_MSG_LOC, ERROR_LOGIN_PREFIX, ERROR_LOGIN);
             userLogin = null;
             userPassword = null;
             return PAGE_ERROR;
