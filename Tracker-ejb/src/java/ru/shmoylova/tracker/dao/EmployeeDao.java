@@ -44,8 +44,8 @@ public class EmployeeDao extends GenericDaoHibernateImpl<Employee> implements IE
 
     @Override
     public Employee loginRequest(String login, String pass) {
-        return (Employee) getSession().createSQLQuery(SQL_QUERY_LOGIN_CHECK + pass + "'))")
-                .addEntity(Employee.class)
+        return (Employee) getSession().createSQLQuery(SQL_QUERY_LOGIN_CHECK + pass + "'))")//TODO: This is a point for 
+                .addEntity(Employee.class)                                              //an SQL-injection attack. Always use prepared statements.
                 //   .setString("userPass",  pass) 
                 .setString(PARAMETR_USER_NAME, login.trim()).uniqueResult();
     }
